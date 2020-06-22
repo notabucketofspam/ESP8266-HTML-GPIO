@@ -3,7 +3,7 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := esp8266-toggle
+PROJECT_NAME := ESP8266-HTML-toggle
 
 include $(IDF_PATH)/make/project.mk
 
