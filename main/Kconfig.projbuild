@@ -1,14 +1,45 @@
 # put here your custom config value
-menu "WiFi Configuration"
-config ESP_WIFI_SSID
+  menu "Network configuration"
+  config WIFI_SSID
     string "WiFi SSID"
     default "myssid"
     help
-	SSID (network name) for the example to connect to.
+      SSID (network name) to connect to.
 
-config ESP_WIFI_PASSWORD
+  config WIFI_PASSWORD
     string "WiFi Password"
     default "mypassword"
     help
-	WiFi password (WPA or WPA2) for the example to use.
+      WiFi password (WPA or WPA2) to use.
+
+  menuconfig IP4_ADDRESS
+    bool "IP4 address"
+    default n
+    help
+      Use specific IPv4 address.
+  
+  config IP4_ADDRESS_1
+  depends on IP4_ADDRESS
+  int  "IP4 address part 1"
+  range 0 255
+  default 192
+
+  config IP4_ADDRESS_2
+  depends on IP4_ADDRESS
+  int  "IP4 address part 2"
+  range 0 255
+  default 168
+
+  config IP4_ADDRESS_3
+  depends on IP4_ADDRESS
+  int  "IP4 address part 3"
+  range 0 255
+  default 1
+
+  config IP4_ADDRESS_4
+  depends on IP4_ADDRESS
+  int  "IP4 address part 4"
+  range 0 255
+  default 2
+
 endmenu
