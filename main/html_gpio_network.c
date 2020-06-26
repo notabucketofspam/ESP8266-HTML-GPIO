@@ -1,27 +1,13 @@
-#include "html_gpio_setup.h"
+#include "html_gpio_network.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-esp_err_t setup_storage(void) {
-	ESP_ERROR_CHECK(nvs_flash_init());
-  esp_vfs_spiffs_conf_t spiffs_config = {
-    .base_path = "/spiffs",
-    .partition_label = NULL,
-    .max_files = 16,
-    .format_if_mount_failed = false,
-	};
-	ESP_ERROR_CHECK(esp_vfs_spiffs_register(&spiffs_config));
-  size_t total_bytes, used_bytes;
-  ESP_ERROR_CHECK(esp_spiffs_info(NULL, &total_bytes, &used_bytes));
-  ESP_LOGD(TAG,"SPIFFS: total bytes: %llu used bytes: %llu", total_bytes, used_bytes);
-  ESP_LOGI(TAG, "Storage OK");
-  return ESP_OK;
-}
-
 esp_err_t setup_network(void) {
+  ESP_LOGI(TAG, "Setup network");
   s_connection_event_group = xEventGroupCreate();
+	ESP_ERROR_CHECK(nvs_flash_init());
   tcpip_adapter_init();
   ESP_ERROR_CHECK(esp_event_loop_create_default());
   tcpip_adapter_ip_info_t ip_info;
@@ -42,6 +28,11 @@ esp_err_t setup_network(void) {
     CONFIG_NETWORK_TIMEOUT * 1000 / portTICK_PERIOD_MS);
   ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
   ESP_LOGD(TAG, "IP receive: " IPSTR, IP2STR(&ip_info.ip));
+  #if CONFIG_LOG_DEFAULT_LEVEL_DEBUG
+    static uint8_t s_system_mac[6];
+    esp_read_mac(&s_system_mac, ESP_MAC_WIFI_STA);
+    ESP_LOGD(TAG, "System MAC: " MACSTR, MAC2STR(s_system_mac));
+  #endif
   #if CONFIG_IP4_ADDRESS
     ip_info.ip.addr = IP4_ADDRESS_U32;
     ESP_ERROR_CHECK(tcpip_adapter_set_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
@@ -49,14 +40,6 @@ esp_err_t setup_network(void) {
   #endif
   ESP_LOGI(TAG, "Network OK");
   return ESP_OK;
-}
-
-httpd_handle_t setup_httpd_server(void) {
-  httpd_config_t httpd_config = HTTPD_DEFAULT_CONFIG();
-  httpd_handle_t httpd_server = NULL;
-  ESP_ERROR_CHECK(httpd_start(&httpd_server, &httpd_config));
-  ESP_LOGI(TAG, "HTTPD server OK");
-  return httpd_server;
 }
 
 static void connection_receive_ip(void *arg, esp_event_base_t event_base,

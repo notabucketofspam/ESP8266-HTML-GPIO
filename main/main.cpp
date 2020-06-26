@@ -1,4 +1,4 @@
-#include "html_gpio_setup.h"
+#include "html_gpio_core.h"
 #ifdef NEOPIXEL
   #include "../include/Adafruit_NeoPixel/Adafruit_NeoPixel.h"
 #endif
@@ -8,8 +8,5 @@
 #endif
 
 void app_main(void) {
-  ESP_LOGI(TAG, "Setup start");
-  ESP_ERROR_CHECK(setup_storage());
-  ESP_ERROR_CHECK(setup_network());
-  s_httpd_server = setup_httpd_server();
+  ESP_ERROR_CHECK(setup_core());
 }
