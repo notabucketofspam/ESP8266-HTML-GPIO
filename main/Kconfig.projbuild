@@ -1,22 +1,21 @@
 # put here your custom config value
-  menu "Network configuration"
+menu "Network configuration"
   config WIFI_SSID
     string "WiFi SSID"
     default "myssid"
-    help
-      SSID (network name) to connect to.
 
   config WIFI_PASSWORD
     string "WiFi Password"
     default "mypassword"
-    help
-      WiFi password (WPA or WPA2) to use.
+
+  config NETWORK_TIMEOUT
+    int "Network timeout"
+    range 1 600
+    default 30
 
   menuconfig IP4_ADDRESS
     bool "IP4 address"
     default n
-    help
-      Use specific IPv4 address.
   
   config IP4_ADDRESS_1
   depends on IP4_ADDRESS
