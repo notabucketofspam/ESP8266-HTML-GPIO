@@ -18,7 +18,9 @@
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 
+#ifndef CONFIG_IDF_TARGET
 #include "../build/include/sdkconfig.h"
+#endif
 
 // Fix for __ESP_FILE__ not defined
 #ifndef __ESP_FILE__
