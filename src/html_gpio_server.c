@@ -4,10 +4,9 @@
 extern "C" {
 #endif
 
-esp_err_t setup_server(void) {
+esp_err_t setup_server(const httpd_config_t *httpd_config) {
   ESP_LOGI(TAG, "Setup server");
   s_httpd_server = NULL;
-  httpd_config_t httpd_config = HTTPD_DEFAULT_CONFIG();
   ESP_ERROR_CHECK(httpd_start(&s_httpd_server, &httpd_config));
   ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server, &index_html_get));
   ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server, &gpio_post));

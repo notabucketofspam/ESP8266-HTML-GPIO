@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-esp_err_t setup_network(void) {
+esp_err_t setup_network(const wifi_config_t *sta_config) {
   ESP_LOGI(TAG, "Setup network");
   s_connection_event_group = xEventGroupCreate();
 	ESP_ERROR_CHECK(nvs_flash_init());
@@ -14,12 +14,6 @@ esp_err_t setup_network(void) {
   ESP_ERROR_CHECK(esp_wifi_init(&wifi_init_config));
   ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &connection_receive_ip, &ip_info));
   ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
-  wifi_config_t sta_config = {
-    .sta = {
-      .ssid = CONFIG_WIFI_SSID,
-      .password = CONFIG_WIFI_PASSWORD,
-    }
-  };
   ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &sta_config));
 	ESP_ERROR_CHECK(esp_wifi_start());
   ESP_ERROR_CHECK(esp_wifi_connect());

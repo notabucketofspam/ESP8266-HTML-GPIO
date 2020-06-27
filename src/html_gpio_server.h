@@ -14,7 +14,7 @@ extern httpd_uri_t index_html_get;
 extern httpd_uri_t gpio_post;
 static FILE *s_index_html;
 
-esp_err_t setup_server(void);
+esp_err_t setup_server(const httpd_config_t *httpd_config);
 static esp_err_t index_html_get_handler(httpd_req_t *req);
 static esp_err_t gpio_post_handler(httpd_req_t *req);
 

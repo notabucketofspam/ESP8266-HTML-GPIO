@@ -11,11 +11,17 @@ extern "C" {
 #endif
 
 #define RECEIVE_IP_BIT BIT(0)
+#define NETWORK_DEFAULT_CONFIG() {    \
+  .sta = {                            \
+    .ssid = CONFIG_WIFI_SSID,         \
+    .password = CONFIG_WIFI_PASSWORD, \
+  }                                   \
+}
 
 static const char *TAG = "html_gpio_network";
 static EventGroupHandle_t s_connection_event_group;
 
-esp_err_t setup_network(void);
+esp_err_t setup_network(const wifi_config_t *sta_config);
 static void connection_receive_ip(void *arg, esp_event_base_t event_base,
               int32_t event_id, void *event_data);
 

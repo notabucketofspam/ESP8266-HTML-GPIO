@@ -4,14 +4,8 @@
 extern "C" {
 #endif
 
-esp_err_t setup_storage(void) {
+esp_err_t setup_storage(const esp_vfs_spiffs_conf_t *spiffs_config) {
   ESP_LOGI(TAG, "Setup storage");
-  esp_vfs_spiffs_conf_t spiffs_config = {
-    .base_path = "/spiffs",
-    .partition_label = NULL,
-    .max_files = CONFIG_SPIFFS_MAX_FILES,
-    .format_if_mount_failed = false,
-	};
 	ESP_ERROR_CHECK(esp_vfs_spiffs_register(&spiffs_config));
   #if CONFIG_LOG_DEFAULT_LEVEL > 3
     size_t total_bytes, used_bytes;

@@ -22,9 +22,8 @@
 #include "../build/include/sdkconfig.h"
 #endif
 
-// Fix for __ESP_FILE__ not defined
 #ifndef __ESP_FILE__
-  #define __ESP_FILE__ __FILE__
+#define __ESP_FILE__ __FILE__
 #endif
 
 #endif // HTML_GPIO_INCLUDE_H
