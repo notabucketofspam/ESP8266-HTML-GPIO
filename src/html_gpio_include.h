@@ -18,7 +18,7 @@
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 
-#ifndef CONFIG_IDF_TARGET
+#ifdef SDKCONFIG_H_NOT_FOUND
 #include "../build/include/sdkconfig.h"
 #endif
 

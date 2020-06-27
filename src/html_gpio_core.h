@@ -11,6 +11,7 @@ extern "C" {
 #endif
 
 static const char *TAG = "html_gpio_core";
+static FILE *s_gpio_state;
 
 esp_err_t setup_core(void);
 

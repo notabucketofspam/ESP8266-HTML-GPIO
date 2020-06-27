@@ -10,12 +10,13 @@ extern "C" {
 
 static const char *TAG = "html_gpio_server";
 static httpd_handle_t s_httpd_server;
-extern httpd_uri_t uri_get;
-extern httpd_uri_t uri_post;
+extern httpd_uri_t index_html_get;
+extern httpd_uri_t gpio_post;
+static FILE *s_index_html;
 
 esp_err_t setup_server(void);
-esp_err_t get_handler(httpd_req_t *req);
-esp_err_t post_handler(httpd_req_t *req);
+static esp_err_t index_html_get_handler(httpd_req_t *req);
+static esp_err_t gpio_post_handler(httpd_req_t *req);
 
 #ifdef __cplusplus
 }

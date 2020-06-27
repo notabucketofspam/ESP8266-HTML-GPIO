@@ -10,10 +10,6 @@
 extern "C" {
 #endif
 
-#if CONFIG_IP4_ADDRESS
-  #define IP4_ADDRESS_U32 PP_HTONL(LWIP_MAKEU32(CONFIG_IP4_ADDRESS_1,\
-    CONFIG_IP4_ADDRESS_2,CONFIG_IP4_ADDRESS_3,CONFIG_IP4_ADDRESS_4))
-#endif
 #define RECEIVE_IP_BIT BIT(0)
 
 static const char *TAG = "html_gpio_network";
