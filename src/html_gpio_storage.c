@@ -4,9 +4,9 @@
 extern "C" {
 #endif
 
-esp_err_t setup_storage(const esp_vfs_spiffs_conf_t *spiffs_config) {
+esp_err_t setup_storage(const storage_config_t *storage_config) {
   ESP_LOGI(TAG, "Setup storage");
-	ESP_ERROR_CHECK(esp_vfs_spiffs_register(&spiffs_config));
+	ESP_ERROR_CHECK(esp_vfs_spiffs_register(&storage_config));
   #if CONFIG_LOG_DEFAULT_LEVEL > 3
     size_t total_bytes, used_bytes;
     ESP_ERROR_CHECK(esp_spiffs_info(NULL, &total_bytes, &used_bytes));

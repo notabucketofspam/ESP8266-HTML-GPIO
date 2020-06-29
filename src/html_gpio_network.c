@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-esp_err_t setup_network(const wifi_config_t *sta_config) {
+esp_err_t setup_network(const network_config_t *network_config) {
   ESP_LOGI(TAG, "Setup network");
   s_connection_event_group = xEventGroupCreate();
 	ESP_ERROR_CHECK(nvs_flash_init());
@@ -14,7 +14,7 @@ esp_err_t setup_network(const wifi_config_t *sta_config) {
   ESP_ERROR_CHECK(esp_wifi_init(&wifi_init_config));
   ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &connection_receive_ip, &ip_info));
   ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
-  ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &sta_config));
+  ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &network_config));
 	ESP_ERROR_CHECK(esp_wifi_start());
   ESP_ERROR_CHECK(esp_wifi_connect());
   xEventGroupWaitBits(s_connection_event_group, RECEIVE_IP_BIT, true, true, 
@@ -36,8 +36,7 @@ esp_err_t setup_network(const wifi_config_t *sta_config) {
   return ESP_OK;
 }
 
-static void connection_receive_ip(void *arg, esp_event_base_t event_base,
-              int32_t event_id, void *event_data) {
+static void connection_receive_ip(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data) {
   ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
   tcpip_adapter_ip_info_t *event_ip_info = &arg;
   memcpy(&event_ip_info->ip, &event->ip_info.ip, sizeof(ip4_addr_t));
