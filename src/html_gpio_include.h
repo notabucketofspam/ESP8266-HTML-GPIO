@@ -18,6 +18,13 @@
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 
+#include "driver/gpio.h"
+#include "esp_http_server.h"
+#include "esp_spiffs.h"
+#include "nvs_flash.h"
+#include "esp_wifi.h"
+#include "tcpip_adapter.h"
+
 #ifdef SDKCONFIG_H_NOT_FOUND
 #include "../build/include/sdkconfig.h"
 #endif

@@ -1,3 +1,18 @@
 <!DOCTYPE html>
-
+  <head>
+    <title>ESP8266_HTML_GPIO</title>
+    <h1>ESP8266_HTML_GPIO</h1>
+  </head>
+  <body>
+    <input type="checkbox" data-gpio-pin-num="0" onchange="gpio_checkbox_toggle(this)">
+    <label for="gpio_0">GPIO 0</label>
+    <script>
+      function gpio_checkbox_toggle(element) {
+        var xhttp_request = new XMLHttpRequest;
+        xhttp_request.open("GET", "/gpio?gpio_pin_num=" + element.data-gpio-pin-num + 
+          "&gpio_set_level=" + element.checked, true);
+        xhttp_request.send();
+      }
+    </script>
+  </body>
 </html>
