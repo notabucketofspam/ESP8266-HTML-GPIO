@@ -1,11 +1,15 @@
 #ifndef HTML_GPIO_CORE_H
 #define HTML_GPIO_CORE_H
 
-#include "html_gpio_include.h"
-#include "html_gpio_storage.h"
-#include "html_gpio_network.h"
-#include "html_gpio_server.h"
-#include "html_gpio_control.h"
+#include "../include/ESP8266-general-include/general_include.h"
+#include "../include/ESP8266-general-include/general_storage.h"
+#include "../include/ESP8266-general-include/general_network.h"
+#include "../include/ESP8266-general-include/general_server.h"
+#include "../include/ESP8266-general-include/general_control.h"
+
+#ifdef SDKCONFIG_H_NOT_FOUND
+#include "../build/include/sdkconfig.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
