@@ -1,4 +1,4 @@
-#include "../src/html_gpio_core.h"
+#include "../html_gpio_core.h"
 
 #ifdef __cplusplus
 extern "C" {
