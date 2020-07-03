@@ -1,4 +1,5 @@
 build/
+main/Kconfig.projbuild
 include/
 .vscode/
 sdkconfig

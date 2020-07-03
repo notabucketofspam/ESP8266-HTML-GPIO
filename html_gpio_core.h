@@ -34,6 +34,8 @@ typedef struct {
 
 /* Initialize all setups */
 esp_err_t setup_core(const core_config_t *core_config);
+/* URI handler for persistent pin state save request from client */
+static esp_err_t save_get_handler(httpd_req_t *req);
 /* URI handler for GPIO control request from client */
 static esp_err_t gpio_get_handler(httpd_req_t *req);
 
