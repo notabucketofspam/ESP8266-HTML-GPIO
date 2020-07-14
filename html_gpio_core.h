@@ -1,20 +1,19 @@
 #ifndef HTML_GPIO_CORE_H
 #define HTML_GPIO_CORE_H
 
-#include "include/ESP8266-general-include/general_include.h"
-#include "include/ESP8266-general-include/general_storage.h"
-#include "include/ESP8266-general-include/general_network.h"
-#include "include/ESP8266-general-include/general_server.h"
-#include "include/ESP8266-general-include/general_control.h"
-
-#ifdef SDKCONFIG_H_NOT_FOUND
-#include "build/include/sdkconfig.h"
-#endif
+#include "ESP8266-general-include/general_include.h"
+#include "ESP8266-general-include/general_storage.h"
+#include "ESP8266-general-include/general_network.h"
+#include "ESP8266-general-include/general_server.h"
+#include "ESP8266-general-include/general_control.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#ifndef __ESP_FILE__
+  #define __ESP_FILE__ __FILE__
+#endif
 /* Set all configs to default values */
 #define CORE_DEFAULT_CONFIG() {               \
   .storage_config = STORAGE_DEFAULT_CONFIG(), \
@@ -34,8 +33,12 @@ typedef struct {
 
 /* Initialize all setups */
 esp_err_t setup_core(const core_config_t *core_config);
+/* URI handler for pin config request from client */
+static esp_err_t pins_get_handler(httpd_req_t *req);
 /* URI handler for persistent pin state save request from client */
 static esp_err_t save_get_handler(httpd_req_t *req);
+/* URI handler for persistent pin state load request from client */
+static esp_err_t load_get_handler(httpd_req_t *req);
 /* URI handler for GPIO control request from client */
 static esp_err_t gpio_get_handler(httpd_req_t *req);
 

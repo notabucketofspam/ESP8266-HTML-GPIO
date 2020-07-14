@@ -5,20 +5,111 @@
   </head>
   <body>
     <input type="button" value="Save" onclick="persistent_state_save()">
-    <input type="checkbox" id=gpio_0 data-gpio-pin-num="0" onchange="gpio_checkbox_toggle(this)">
-    <label for="gpio_0">GPIO 0</label>
+    <input type="button" value="Load" onclick="persistent_state_load()">
+    <hr>
   </body>
   <script>
+    var GPIO_PIN_COUNT = 17;
+    var gpio_local_array, pin_bit_mask, pin_mode;
+    function GPIO_RTL(x) {
+      return (GPIO_PIN_COUNT - 1 - x);
+    }
+    (function() {
+      var xhttp_request = new XMLHttpRequest;
+      xhttp_request.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          pin_bit_mask = this.responseText.split("\n")[0];
+          pin_mode = this.responseText.split("\n")[1];
+          generate_gpio_elements();
+        }
+      };
+      xhttp_request.open("GET", "/pins", true);
+      xhttp_request.send();
+    })();
+    function generate_gpio_elements() {
+      var index;
+      for (index = 0; index < GPIO_PIN_COUNT; ++index) {
+        if (!(parseInt(pin_bit_mask.charAt(GPIO_RTL(index)))))
+          continue;
+        var gpio_input = document.createElement("INPUT");
+        var gpio_input_attribute_type = document.createAttribute("type");
+        gpio_input_attribute_type.value = "checkbox";
+        gpio_input.setAttributeNode(gpio_input_attribute_type);
+        var gpio_input_attribute_id = document.createAttribute("id");
+        gpio_input_attribute_id.value = "gpio_" + String(index);
+        gpio_input.setAttributeNode(gpio_input_attribute_id);
+        var gpio_input_attribute_class = document.createAttribute("class");
+        gpio_input_attribute_class.value = "gpio";
+        gpio_input.setAttributeNode(gpio_input_attribute_class);
+        var gpio_input_attribute_data_gpio_pin_num = document.createAttribute("data-gpio-pin-num");
+        gpio_input_attribute_data_gpio_pin_num.value = String(index);
+        gpio_input.setAttributeNode(gpio_input_attribute_data_gpio_pin_num);
+        switch (parseInt(pin_mode.charAt(GPIO_RTL(index)))) {
+          case 1:
+            var gpio_input_attribute_readonly = document.createAttribute("readonly");
+            gpio_input.setAttributeNode(gpio_input_attribute_readonly);
+            break;
+          case 2:
+            var gpio_input_attribute_onchange = document.createAttribute("onchange");
+            gpio_input_attribute_onchange.value = "gpio_checkbox_change(this)";
+            gpio_input.setAttributeNode(gpio_input_attribute_onchange);
+            break;
+          default: break;
+        }
+        document.body.appendChild(gpio_input);
+        var gpio_label = document.createElement("LABEL");
+        var gpio_label_attribute_for = document.createAttribute("for");
+        gpio_label_attribute_for.value = "gpio_" + String(index);
+        gpio_label.setAttributeNode(gpio_label_attribute_for);
+        gpio_label.innerHTML = "GPIO " + String(index);
+        document.body.appendChild(gpio_label);
+        var gpio_br = document.createElement("BR");
+        document.body.appendChild(gpio_br);
+      }
+      gpio_local_array = document.getElementsByClassName("gpio");
+    }
     function persistent_state_save() {
       var xhttp_request = new XMLHttpRequest;
       xhttp_request.open("GET", "/save", true);
       xhttp_request.send();
     }
-    function gpio_checkbox_toggle(element) {
+    function persistent_state_load() {
       var xhttp_request = new XMLHttpRequest;
-      xhttp_request.open("GET", "/gpio?gpio_pin_num=" + element.data-gpio-pin-num + 
-        "&gpio_set_level=" + element.checked, true);
+      xhttp_request.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          var state_index, pin_bit_mask_counter = 0;
+          for (state_index = 0; state_index < GPIO_PIN_COUNT; ++state_index) {
+            if ((parseInt(gpio_local_array[pin_bit_mask_counter].getAttribute("data-gpio-pin-num")) ==
+              state_index) && (parseInt(pin_mode.charAt(GPIO_RTL(state_index))) == 2)) {
+              gpio_local_array[pin_bit_mask_counter].checked = 
+                Boolean(parseInt(this.responseText.charAt(GPIO_RTL(state_index))));
+              ++pin_bit_mask_counter;
+            }
+          }
+        }
+      };
+      xhttp_request.open("GET", "/load", true);
       xhttp_request.send();
     }
+    function gpio_checkbox_change(element) {
+      gpio_checkbox_update(element);
+    }
+    function gpio_checkbox_update(element){
+      var xhttp_request = new XMLHttpRequest;
+      xhttp_request.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          if (element.hasAttribute("readonly"))
+            element.checked = Boolean(parseInt(this.responseText));
+        }
+      };
+      xhttp_request.open("GET", "/gpio?gpio_pin_num=" + String(element.getAttribute("data-gpio-pin-num")) + 
+        "&gpio_set_level=" + String(element.checked), true);
+      xhttp_request.send();
+    }
+    setInterval (function() {
+      var index;
+      for (index = 0; index < gpio_local_array.length; ++index)
+        gpio_checkbox_update(gpio_local_array[index]);
+    }, 1000);
   </script>
 </html>
