@@ -11,9 +11,6 @@
 extern "C" {
 #endif
 
-#ifndef __ESP_FILE__
-  #define __ESP_FILE__ __FILE__
-#endif
 /* Set all configs to default values */
 #define CORE_DEFAULT_CONFIG() {               \
   .storage_config = STORAGE_DEFAULT_CONFIG(), \
