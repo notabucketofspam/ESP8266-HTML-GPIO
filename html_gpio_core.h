@@ -1,11 +1,11 @@
 #ifndef HTML_GPIO_CORE_H
 #define HTML_GPIO_CORE_H
 
-#include "ESP8266-general-include/general_include.h"
-#include "ESP8266-general-include/general_storage.h"
-#include "ESP8266-general-include/general_network.h"
-#include "ESP8266-general-include/general_server.h"
-#include "ESP8266-general-include/general_control.h"
+#include "general_component/general_include.h"
+#include "general_component/general_storage.h"
+#include "general_component/general_network.h"
+#include "general_component/general_server.h"
+#include "general_component/general_control.h"
 
 #ifdef __cplusplus
 extern "C" {
