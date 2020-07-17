@@ -85,10 +85,9 @@ static esp_err_t gpio_get_handler(httpd_req_t *req) {
   ESP_ERROR_CHECK(httpd_query_key_value(query_str_buf, "gpio_set_level", 
     query_gpio_set_level_buf, sizeof(query_gpio_set_level_buf)));
   bool gpio_level = (strcmp(query_gpio_set_level_buf, "true") == 0);
-  uint8_t gpio_level_buf[2] = { 0 };
   switch (atoi(s_pin_mode[GPIO_RTL(gpio_pin_num)])) {
     case 1:
-      gpio_level_buf[0] = 0x30 + gpio_get_level(gpio_pin_num);
+      uint8_t gpio_level_buf[2] = { 0x30 + gpio_get_level(gpio_pin_num), 0 };
       ESP_ERROR_CHECK(httpd_resp_send_chunk(req, gpio_level_buf, strlen(gpio_level_buf)));
       break;
     case 2:
