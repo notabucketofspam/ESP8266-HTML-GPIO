@@ -1,2 +1,4 @@
+set(COMPONENT_REQUIRES genreral_all)
+
 set(COMPONENT_SRCS ".")
 set(COMPONENT_ADD_INCLUDEDIRS ".")
