@@ -1,4 +1,6 @@
-set(COMPONENT_REQUIRES genreral_all)
+# The following lines of boilerplate have to be in your project's
+# CMakeLists in this exact order for cmake to work correctly
+cmake_minimum_required(VERSION 3.5)
 
-set(COMPONENT_SRCS ".")
-set(COMPONENT_ADD_INCLUDEDIRS ".")
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+project(ESP8266-HTML-GPIO)

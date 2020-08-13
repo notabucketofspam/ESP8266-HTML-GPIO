@@ -1,0 +1,3 @@
+[submodule "components/ESP8266-general-component"]
+	path = components/ESP8266-general-component
+	url = https://github.com/notabucketofspam/ESP8266-general-component.git
