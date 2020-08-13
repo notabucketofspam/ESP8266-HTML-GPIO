@@ -1,7 +1,6 @@
 .vscode/
 backup/
 build/
-components/
 main/Kconfig.projbuild
 partitions_1M
 partitions_4M
