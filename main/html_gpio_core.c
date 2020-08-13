@@ -32,20 +32,20 @@ httpd_uri_t gpio_get = {
   .user_ctx = NULL,
 };
 
-esp_err_t setup_core(const core_config_t *core_config) {
-  ESP_LOGI(TAG, "Setup core");
+esp_err_t setup_core(const core_config_t core_config) {
+  ESP_LOGI(CORE_TAG, "Setup core");
   ESP_ERROR_CHECK(esp_event_loop_create_default());
-  ESP_ERROR_CHECK(setup_storage(&core_config->storage_config));
+  ESP_ERROR_CHECK(setup_storage(&core_config.storage_config));
   ESP_ERROR_CHECK(storage_access(s_gpio_state, "/spiffs/gpio_state", STORAGE_READ_WRITE));
-  ESP_ERROR_CHECK(setup_control(&core_config->control_config));
-  ESP_ERROR_CHECK(setup_network(&core_config->network_config));
+  ESP_ERROR_CHECK(setup_control(&core_config.control_config));
+  ESP_ERROR_CHECK(setup_network(&core_config.network_config));
   ESP_ERROR_CHECK(storage_access(s_index_html, "/spiffs/index.html", STORAGE_READ));
-  ESP_ERROR_CHECK(setup_server(&core_config->server_config));
+  ESP_ERROR_CHECK(setup_server(&core_config.server_config));
   ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server, &pins_get));
   ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server, &save_get));
   ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server, &load_get));
   ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server, &gpio_get));
-  ESP_LOGI(TAG, "Core OK");
+  ESP_LOGI(CORE_TAG, "Core OK");
   return ESP_OK;
 }
 

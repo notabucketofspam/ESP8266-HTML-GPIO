@@ -1,7 +1,7 @@
 #ifndef HTML_GPIO_CORE_H
 #define HTML_GPIO_CORE_H
 
-#include "general_component/general_all.h"
+#include "general_all.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,7 +15,7 @@ extern "C" {
   .server_config = SERVER_DEFAULT_CONFIG(),   \
 }
 
-static const char *TAG = "html_gpio_core";
+static const char *CORE_TAG = "html_gpio_core";
 /* Collection of configs, one for for each setup */
 typedef struct {
   storage_config_t storage_config;  // Config for SPIFFS storage
@@ -25,7 +25,7 @@ typedef struct {
 } core_config_t;
 
 /* Initialize all setups */
-esp_err_t setup_core(const core_config_t *core_config);
+esp_err_t setup_core(const core_config_t core_config);
 /* URI handler for pin config request from client */
 static esp_err_t pins_get_handler(httpd_req_t *req);
 /* URI handler for persistent pin state save request from client */
