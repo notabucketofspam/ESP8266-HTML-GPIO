@@ -25,7 +25,7 @@ typedef struct {
 } core_config_t;
 
 /* Initialize all setups */
-esp_err_t setup_core(const core_config_t core_config);
+esp_err_t setup_core(core_config_t core_config);
 /* URI handler for pin config request from client */
 static esp_err_t pins_get_handler(httpd_req_t *req);
 /* URI handler for persistent pin state save request from client */

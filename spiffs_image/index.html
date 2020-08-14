@@ -29,7 +29,7 @@
     function generate_gpio_elements() {
       var index;
       for (index = 0; index < GPIO_PIN_COUNT; ++index) {
-        if (!(parseInt(pin_bit_mask.charAt(GPIO_RTL(index)))))
+        if (!(parseInt(pin_bit_mask.charAt(index))))
           continue;
         var gpio_input = document.createElement("INPUT");
         var gpio_input_attribute_type = document.createAttribute("type");
@@ -44,7 +44,7 @@
         var gpio_input_attribute_data_gpio_pin_num = document.createAttribute("data-gpio-pin-num");
         gpio_input_attribute_data_gpio_pin_num.value = String(index);
         gpio_input.setAttributeNode(gpio_input_attribute_data_gpio_pin_num);
-        switch (parseInt(pin_mode.charAt(GPIO_RTL(index)))) {
+        switch (parseInt(pin_mode.charAt(index))) {
           case 1:
             var gpio_input_attribute_readonly = document.createAttribute("readonly");
             gpio_input.setAttributeNode(gpio_input_attribute_readonly);
@@ -80,9 +80,9 @@
           var state_index, pin_bit_mask_counter = 0;
           for (state_index = 0; state_index < GPIO_PIN_COUNT; ++state_index) {
             if ((parseInt(gpio_local_array[pin_bit_mask_counter].getAttribute("data-gpio-pin-num")) ==
-              state_index) && (parseInt(pin_mode.charAt(GPIO_RTL(state_index))) == 2)) {
+              state_index) && (parseInt(pin_mode.charAt(state_index)) == 2)) {
               gpio_local_array[pin_bit_mask_counter].checked = 
-                Boolean(parseInt(this.responseText.charAt(GPIO_RTL(state_index))));
+                Boolean(parseInt(this.responseText.charAt(state_index)));
               ++pin_bit_mask_counter;
             }
           }

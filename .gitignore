@@ -7,3 +7,4 @@ partitions_4M
 sdkconfig
 sdkconfig.defaults
 sdkconfig.old
+spiffs.bin
