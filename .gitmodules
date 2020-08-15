@@ -4,6 +4,6 @@
 [submodule "util/mkspiffs"]
 	path = util/mkspiffs
 	url = https://github.com/igrr/mkspiffs.git
-  [submodule "util/esptool"]
+[submodule "util/esptool"]
 	path = util/esptool
 	url = https://github.com/espressif/esptool.git
