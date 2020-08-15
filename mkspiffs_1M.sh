@@ -1,9 +1,10 @@
 #!/bin/sh
 echo "Default serial port..."
 read default_serial_port
+cd util
 cd mkspiffs; git submodule update --init; 
 make dist CPPFLAGS="-DSPIFFS_ALIGNED_OBJECT_INDEX_TABLES=1"
-./mkspiffs -c ../spiffs_image/ -b 4096 -p 256 -s 0x70000 ../spiffs.bin
+./mkspiffs -c ../../spiffs_image/ -b 4096 -p 256 -s 0x70000 ../spiffs.bin
 cd ..
 cd esptool
 pip install --user -e .
