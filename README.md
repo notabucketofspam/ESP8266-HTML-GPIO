@@ -8,3 +8,8 @@ planned.
 
 Important: Always use CORE_DEFAULT_CONFIG() when generating program config, and 
 then modify settings from there.
+
+Order of operations:
+- `make flash`
+- `./mkspiffs_xM.sh`
+- `make app-flash`

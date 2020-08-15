@@ -8,11 +8,11 @@ extern "C" {
 #endif
 
 /* Set all configs to default values */
-#define CORE_DEFAULT_CONFIG() {               \
-  .storage_config = STORAGE_DEFAULT_CONFIG(), \
-  .control_config = CONTROL_DEFAULT_CONFIG(), \
-  .network_config = NETWORK_DEFAULT_CONFIG(), \
-  .server_config = SERVER_DEFAULT_CONFIG(),   \
+#define CORE_DEFAULT_CONFIG() {                                 \
+  .storage_config = STORAGE_DEFAULT_CONFIG(),                   \
+  .control_config = CONTROL_DEFAULT_CONFIG(),                   \
+  .network_config = NETWORK_DEFAULT_CONFIG(),                   \
+  .server_config = SERVER_DEFAULT_CONFIG(s_httpd_server_core),  \
 }
 
 static const char *CORE_TAG = "html_gpio_core";
@@ -23,7 +23,8 @@ typedef struct {
   network_config_t network_config;  // Config for WiFi network
   server_config_t server_config;    // Config for HTTPD server
 } core_config_t;
-
+/* Global HTTPD server handle */
+static httpd_handle_t s_httpd_server_core;
 /* Initialize all setups */
 esp_err_t setup_core(core_config_t core_config);
 /* URI handler for pin config request from client */

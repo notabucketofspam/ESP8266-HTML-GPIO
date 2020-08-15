@@ -36,15 +36,20 @@ esp_err_t setup_core(core_config_t core_config) {
   ESP_LOGI(CORE_TAG, "Setup core");
   ESP_ERROR_CHECK(esp_event_loop_create_default());
   ESP_ERROR_CHECK(setup_storage(core_config.storage_config));
-  ESP_ERROR_CHECK(storage_access(f_gpio_state, "/spiffs/gpio_state", STORAGE_READ_WRITE));
+  //ESP_ERROR_CHECK(storage_access(f_gpio_state, "/spiffs/gpio_state", STORAGE_READ_WRITE));
+  f_gpio_state = fopen("/spiffs/gpio_state", "r+");
+  core_config.control_config.keep_peripheral = CONTROL_UART_0 | CONTROL_UART_1;
   ESP_ERROR_CHECK(setup_control(core_config.control_config));
+  if (core_config.control_config.auto_load_persistent_pin_state)
+    ESP_ERROR_CHECK(load_persistent_gpio_state(f_gpio_state));
   ESP_ERROR_CHECK(setup_network(core_config.network_config));
-  ESP_ERROR_CHECK(storage_access(f_index_html, "/spiffs/index.html", STORAGE_READ));
+  //ESP_ERROR_CHECK(storage_access(f_index_html, "/spiffs/index.html", STORAGE_READ));
+  f_index_html = fopen("/spiffs/index.html", "r");
   ESP_ERROR_CHECK(setup_server(core_config.server_config));
-  ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server, &pins_get));
-  ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server, &save_get));
-  ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server, &load_get));
-  ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server, &gpio_get));
+  ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server_core, &pins_get));
+  ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server_core, &save_get));
+  ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server_core, &load_get));
+  ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server_core, &gpio_get));
   ESP_LOGI(CORE_TAG, "Core OK");
   return ESP_OK;
 }
@@ -68,7 +73,7 @@ static esp_err_t save_get_handler(httpd_req_t *req) {
 }
 
 static esp_err_t load_get_handler(httpd_req_t *req) {
-  ESP_ERROR_CHECK(load_persistent_gpio_state());
+  ESP_ERROR_CHECK(load_persistent_gpio_state(f_gpio_state));
   ESP_ERROR_CHECK(httpd_resp_send_chunk(req, s_gpio_state_mem, sizeof(s_gpio_state_mem)));
   ESP_ERROR_CHECK(httpd_resp_send(req, NULL, 0));
   return ESP_OK;
