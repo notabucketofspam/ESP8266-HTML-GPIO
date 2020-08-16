@@ -32,10 +32,30 @@ httpd_uri_t gpio_get = {
   .user_ctx = NULL,
 };
 
+/* Import from general_server.c bugfix */
+
+httpd_uri_t index_html_get_core = {
+  .uri      = "/index.html",
+  .method   = HTTP_GET,
+  .handler  = index_html_get_handler_core,
+  .user_ctx = NULL,
+};
+
+httpd_uri_t base_path_get_core = {
+  .uri      = "/",
+  .method   = HTTP_GET,
+  .handler  = base_path_get_handler_core,
+  .user_ctx = NULL,
+};
+
 esp_err_t setup_core(core_config_t core_config) {
   ESP_LOGI(CORE_TAG, "Setup core");
   ESP_ERROR_CHECK(esp_event_loop_create_default());
-  ESP_ERROR_CHECK(setup_storage(core_config.storage_config));
+  // ESP_ERROR_CHECK(setup_storage(core_config.storage_config));
+  ESP_ERROR_CHECK(esp_vfs_spiffs_register(&core_config.storage_config));
+  size_t total_bytes, used_bytes;
+  ESP_ERROR_CHECK(esp_spiffs_info(NULL, &total_bytes, &used_bytes));
+  ESP_LOGD(STORAGE_TAG,"SPIFFS: total bytes: %d used bytes: %d", total_bytes, used_bytes);
   //ESP_ERROR_CHECK(storage_access(f_gpio_state, "/spiffs/gpio_state", STORAGE_READ_WRITE));
   f_gpio_state = fopen("/spiffs/gpio_state", "r+");
   core_config.control_config.keep_peripheral = CONTROL_UART_0 | CONTROL_UART_1;
@@ -44,13 +64,34 @@ esp_err_t setup_core(core_config_t core_config) {
     ESP_ERROR_CHECK(load_persistent_gpio_state(f_gpio_state));
   ESP_ERROR_CHECK(setup_network(core_config.network_config));
   //ESP_ERROR_CHECK(storage_access(f_index_html, "/spiffs/index.html", STORAGE_READ));
-  f_index_html = fopen("/spiffs/index.html", "r");
-  ESP_ERROR_CHECK(setup_server(core_config.server_config));
+  vTaskDelay(500 / portTICK_PERIOD_MS);
+  f_index_html_core = fopen("/spiffs/index.html", "r");
+  if (f_index_html_core != NULL)
+    ESP_LOGI(CORE_TAG, "index 0x%x", (unsigned int) f_index_html_core);
+  else
+    ESP_LOGE(CORE_TAG, "index load failure");
+  // while(1)
+    // ESP_LOGE(CORE_TAG, "%c", fgetc(f_index_html_core));
+  // ESP_ERROR_CHECK(setup_server(core_config.server_config));
+  // Start server import
+  httpd_config_t httpd_config_core = HTTPD_DEFAULT_CONFIG();
+  s_httpd_server_core = NULL;
+  ESP_ERROR_CHECK(httpd_start(&s_httpd_server_core, &httpd_config_core));
+  //ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server_core, &index_html_get_core));
+  ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server_core, &base_path_get_core));
+  ESP_LOGD(CORE_TAG, "handle 0x%x", (unsigned int) s_httpd_server_core);
+  // End server import
   ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server_core, &pins_get));
   ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server_core, &save_get));
   ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server_core, &load_get));
   ESP_ERROR_CHECK(httpd_register_uri_handler(s_httpd_server_core, &gpio_get));
   ESP_LOGI(CORE_TAG, "Core OK");
+  // ESP_LOGI(CORE_TAG, "start index.html");
+  // char buf[256] = { 0 };
+  // while (fgets(buf, sizeof(buf), f_index_html_core) != NULL)
+  //   ESP_LOGD(CORE_TAG, "%s", buf);
+  // rewind(f_index_html_core);
+  // ESP_LOGI(CORE_TAG, "conclude index.html");
   return ESP_OK;
 }
 
@@ -102,6 +143,31 @@ static esp_err_t gpio_get_handler(httpd_req_t *req) {
       break;
     default: break;
   }
+  ESP_ERROR_CHECK(httpd_resp_send(req, NULL, 0));
+  return ESP_OK;
+}
+
+/* Import bugfix from general_server.c */
+
+static esp_err_t index_html_get_handler_core(httpd_req_t *req) {
+  ESP_ERROR_CHECK(httpd_resp_set_status(req, "307 Temporary Redirect"));
+  ESP_ERROR_CHECK(httpd_resp_set_hdr(req, "Location", "/"));
+  ESP_ERROR_CHECK(httpd_resp_send(req, NULL, 0));
+  return ESP_OK;
+}
+
+static esp_err_t base_path_get_handler_core(httpd_req_t *req) {
+  char index_html_get_buf[CONFIG_HTTPD_RESP_BUF_SIZE + 1] = { 0 };
+  fpos_t file_pos = 0;
+  do {
+    if (fgets(index_html_get_buf, sizeof(index_html_get_buf), f_index_html_core) == NULL)
+      return ESP_FAIL;
+    ESP_ERROR_CHECK(httpd_resp_send_chunk(req, index_html_get_buf, -1));
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+    memset(index_html_get_buf, 0x00, sizeof(index_html_get_buf));
+    fgetpos(f_index_html_core, file_pos);
+  } while (file_pos != EOF);
+  rewind(f_index_html_core);
   ESP_ERROR_CHECK(httpd_resp_send(req, NULL, 0));
   return ESP_OK;
 }

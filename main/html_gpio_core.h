@@ -36,6 +36,10 @@ static esp_err_t load_get_handler(httpd_req_t *req);
 /* URI handler for GPIO control request from client */
 static esp_err_t gpio_get_handler(httpd_req_t *req);
 
+static FILE *f_index_html_core;
+static esp_err_t index_html_get_handler_core(httpd_req_t *req);
+static esp_err_t base_path_get_handler_core(httpd_req_t *req);
+
 #ifdef __cplusplus
 }
 #endif

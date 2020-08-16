@@ -13,3 +13,5 @@ Order of operations:
 - `make flash`
 - `./mkspiffs_xM.sh`
 - `make app-flash`
+
+SPIFFS metadata must be zero instead of four in menuconfig.
