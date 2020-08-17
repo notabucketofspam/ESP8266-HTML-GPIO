@@ -4,28 +4,28 @@
     <h1>ESP8266_HTML_GPIO</h1>
   </head>
   <body>
+    <input type="button" value="Page" onclick="request_pins()">
     <input type="button" value="Save" onclick="persistent_state_save()">
     <input type="button" value="Load" onclick="persistent_state_load()">
     <hr>
-  </body>
   <script>
     var GPIO_PIN_COUNT = 17;
     var gpio_local_array, pin_bit_mask, pin_mode;
     function GPIO_RTL(x) {
       return (GPIO_PIN_COUNT - 1 - x);
     }
-    (function() {
+    function request_pins() {
       var xhttp_request = new XMLHttpRequest;
       xhttp_request.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-          pin_bit_mask = this.responseText.split("\n")[0];
-          pin_mode = this.responseText.split("\n")[1];
+          pin_bit_mask = this.responseText.split(" ")[0];
+          pin_mode = this.responseText.split(" ")[1];
           generate_gpio_elements();
         }
       };
       xhttp_request.open("GET", "/pins", true);
       xhttp_request.send();
-    })();
+    }
     function generate_gpio_elements() {
       var index;
       for (index = 0; index < GPIO_PIN_COUNT; ++index) {
@@ -106,10 +106,11 @@
         "&gpio_set_level=" + String(element.checked), true);
       xhttp_request.send();
     }
-    setInterval (function() {
-      var index;
-      for (index = 0; index < gpio_local_array.length; ++index)
-        gpio_checkbox_update(gpio_local_array[index]);
-    }, 1000);
+    // setInterval (function() {
+    //   var index;
+    //   for (index = 0; index < gpio_local_array.length; ++index)
+    //     gpio_checkbox_update(gpio_local_array[index]);
+    // }, 1000);
   </script>
+  </body>
 </html>

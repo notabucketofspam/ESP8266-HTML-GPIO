@@ -58,7 +58,7 @@ esp_err_t setup_core(core_config_t core_config) {
   ESP_LOGD(STORAGE_TAG,"SPIFFS: total bytes: %d used bytes: %d", total_bytes, used_bytes);
   //ESP_ERROR_CHECK(storage_access(f_gpio_state, "/spiffs/gpio_state", STORAGE_READ_WRITE));
   f_gpio_state = fopen("/spiffs/gpio_state", "r+");
-  core_config.control_config.keep_peripheral = CONTROL_UART_0 | CONTROL_UART_1;
+  // core_config.control_config.keep_peripheral = CONTROL_UART_0 | CONTROL_UART_1;
   ESP_ERROR_CHECK(setup_control(core_config.control_config));
   if (core_config.control_config.auto_load_persistent_pin_state)
     ESP_ERROR_CHECK(load_persistent_gpio_state(f_gpio_state));
@@ -96,10 +96,15 @@ esp_err_t setup_core(core_config_t core_config) {
 }
 
 static esp_err_t pins_get_handler(httpd_req_t *req) {
-  ESP_ERROR_CHECK(httpd_resp_send_chunk(req, s_pin_bit_mask, sizeof(s_pin_bit_mask)));
-  ESP_ERROR_CHECK(httpd_resp_send_chunk(req, "\n", strlen("\n")));
-  ESP_ERROR_CHECK(httpd_resp_send_chunk(req, s_pin_mode, sizeof(s_pin_mode)));
-  ESP_ERROR_CHECK(httpd_resp_send(req, NULL, 0));
+  char buf[GPIO_PIN_COUNT + 1] = { 0 };
+  memcpy(buf, s_pin_bit_mask, sizeof(s_pin_bit_mask));
+  ESP_LOGW(CORE_TAG, "mask: %s", buf);
+  ESP_ERROR_CHECK(httpd_resp_send_chunk(req, buf, -1));
+  ESP_ERROR_CHECK(httpd_resp_send_chunk(req, " ", -1));
+  memcpy(buf, s_pin_mode, sizeof(s_pin_mode));
+  ESP_LOGW(CORE_TAG, "mode: %s", buf);
+  ESP_ERROR_CHECK(httpd_resp_send_chunk(req, buf, -1));
+  ESP_ERROR_CHECK(httpd_resp_send_chunk(req, NULL, 0));
   return ESP_OK;
 }
 
@@ -109,20 +114,20 @@ static esp_err_t save_get_handler(httpd_req_t *req) {
     fputc(s_gpio_state_mem[state_index], f_gpio_state);
   fflush(f_gpio_state);
   rewind(f_gpio_state);
-  ESP_ERROR_CHECK(httpd_resp_send(req, NULL, 0));
+  ESP_ERROR_CHECK(httpd_resp_send_chunk(req, NULL, 0));
   return ESP_OK;
 }
 
 static esp_err_t load_get_handler(httpd_req_t *req) {
   ESP_ERROR_CHECK(load_persistent_gpio_state(f_gpio_state));
   ESP_ERROR_CHECK(httpd_resp_send_chunk(req, s_gpio_state_mem, sizeof(s_gpio_state_mem)));
-  ESP_ERROR_CHECK(httpd_resp_send(req, NULL, 0));
+  ESP_ERROR_CHECK(httpd_resp_send_chunk(req, NULL, 0));
   return ESP_OK;
 }
 
 static esp_err_t gpio_get_handler(httpd_req_t *req) {
   char query_str_buf[128] = { 0 };
-  ESP_ERROR_CHECK(httpd_req_get_url_query_str(req, query_str_buf, httpd_req_get_url_query_len(req)));
+  ESP_ERROR_CHECK(httpd_req_get_url_query_str(req, query_str_buf, sizeof(query_str_buf)));
   char query_gpio_pin_num_buf[4] = { 0 };
   ESP_ERROR_CHECK(httpd_query_key_value(query_str_buf, "gpio_pin_num", 
     query_gpio_pin_num_buf, sizeof(query_gpio_pin_num_buf)));
@@ -143,7 +148,7 @@ static esp_err_t gpio_get_handler(httpd_req_t *req) {
       break;
     default: break;
   }
-  ESP_ERROR_CHECK(httpd_resp_send(req, NULL, 0));
+  ESP_ERROR_CHECK(httpd_resp_send_chunk(req, NULL, 0));
   return ESP_OK;
 }
 
@@ -158,17 +163,24 @@ static esp_err_t index_html_get_handler_core(httpd_req_t *req) {
 
 static esp_err_t base_path_get_handler_core(httpd_req_t *req) {
   char index_html_get_buf[CONFIG_HTTPD_RESP_BUF_SIZE + 1] = { 0 };
-  fpos_t file_pos = 0;
+  fpos_t file_pos;
   do {
-    if (fgets(index_html_get_buf, sizeof(index_html_get_buf), f_index_html_core) == NULL)
-      return ESP_FAIL;
+    // if (fgets(index_html_get_buf, sizeof(index_html_get_buf), f_index_html_core) == NULL)
+    //   return ESP_FAIL;
+    // else
+    //   ESP_LOGD(CORE_TAG, "%s", index_html_get_buf);
+    fgets(index_html_get_buf, sizeof(index_html_get_buf), f_index_html_core);
+    if (strlen(index_html_get_buf) == 0)
+      break;
+    ESP_LOGD(CORE_TAG, "%s", index_html_get_buf);
     ESP_ERROR_CHECK(httpd_resp_send_chunk(req, index_html_get_buf, -1));
-    vTaskDelay(500 / portTICK_PERIOD_MS);
+    // vTaskDelay(500 / portTICK_PERIOD_MS);
     memset(index_html_get_buf, 0x00, sizeof(index_html_get_buf));
-    fgetpos(f_index_html_core, file_pos);
+    fgetpos(f_index_html_core, &file_pos);
   } while (file_pos != EOF);
   rewind(f_index_html_core);
-  ESP_ERROR_CHECK(httpd_resp_send(req, NULL, 0));
+  vTaskDelay(500 / portTICK_PERIOD_MS);
+  ESP_ERROR_CHECK(httpd_resp_send_chunk(req, NULL, 0));
   return ESP_OK;
 }
 

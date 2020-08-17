@@ -40,6 +40,10 @@ static FILE *f_index_html_core;
 static esp_err_t index_html_get_handler_core(httpd_req_t *req);
 static esp_err_t base_path_get_handler_core(httpd_req_t *req);
 
+extern char s_pin_bit_mask[GPIO_PIN_COUNT];
+extern char s_pin_mode[GPIO_PIN_COUNT];
+extern char s_gpio_state_mem[GPIO_PIN_COUNT];
+
 #ifdef __cplusplus
 }
 #endif
