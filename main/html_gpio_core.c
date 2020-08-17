@@ -135,7 +135,7 @@ static esp_err_t gpio_get_handler(httpd_req_t *req) {
   char query_gpio_set_level_buf[8] = { 0 };
   ESP_ERROR_CHECK(httpd_query_key_value(query_str_buf, "gpio_set_level", 
     query_gpio_set_level_buf, sizeof(query_gpio_set_level_buf)));
-  bool gpio_level = (strcmp(query_gpio_set_level_buf, "true") == 0);
+  bool gpio_level = (strcmp(query_gpio_set_level_buf, "true") != 0);
   char gpio_level_buf[2] = { 0 };
   switch (s_pin_mode[gpio_pin_num]) {
     case '1':
